@@ -11,4 +11,3 @@ type Movie struct {
 	ReleaseDate  time.Time
 	Language     string
 }
-

@@ -4,15 +4,18 @@ import (
 	"context"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
 	"movie/config"
-	"time"
 )
 
-var dbClient *mongo.Database
+var (
+	dbClient *mongo.Database
+	client   *mongo.Client
+)
 
 const (
-	CollectionMovie = "movie"
-	CollectionRating = "rating"
+	CollectionMovie   = "movie"
+	CollectionRating  = "rating"
 	CollectionTagUser = "tag_user"
 )
 
@@ -21,16 +24,26 @@ func GetClient() *mongo.Database {
 }
 
 func InitModel() error {
-	cfg := config.GetConfig()
-	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(cfg.MaxConnectionTimeout)*time.Second)
-	defer cancel()
+	cfg := config.GetConfig().Mongo
 	clientOps := options.Client().ApplyURI(cfg.Url)
-	clientOps.Auth.Username, clientOps.Auth.Password = cfg.User, cfg.Password
-	cli, err := mongo.Connect(ctx, clientOps)
+	clientOps.Auth = &options.Credential{
+		Username: cfg.User,
+		Password: cfg.Password,
+	}
+	cli, err := mongo.Connect(context.Background(), clientOps)
 	if err != nil {
 		return err
 	}
 
+	if err = cli.Ping(context.Background(), readpref.Primary()); err != nil {
+		return err
+	}
+
+	client = cli
 	dbClient = cli.Database(cfg.DBName)
 	return nil
+}
+
+func Disconnect() error {
+	return client.Disconnect(context.Background())
 }

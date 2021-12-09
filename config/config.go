@@ -6,18 +6,21 @@ import (
 )
 
 type Config struct {
-	MaxConnectionTimeout int    `json:"maxConnectionTimeout"`
+	Mongo *MongoDB `json:"mongodb"`
+}
+
+type MongoDB struct {
 	Url                  string `json:"url"`
 	DBName               string `json:"DBName"`
 	User                 string `json:"user"`
 	Password             string `json:"password"`
 }
 
-var cfg *Config
-var cfgFileName = "./prod_conf.json"
+var cfg Config
+var cfgFileName = "config/prod_conf.json"
 
 func GetConfig() *Config {
-	return cfg
+	return &cfg
 }
 
 func InitConfig() error {
@@ -26,7 +29,7 @@ func InitConfig() error {
 		return err
 	}
 
-	if err = json.Unmarshal(content, cfg); err != nil {
+	if err = json.Unmarshal(content, &cfg); err != nil {
 		return err
 	}
 
