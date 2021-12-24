@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
-	movie "movie/idl/gen"
+	"log"
+	"movie/idl/gen/movie"
+	"movie/service"
 )
 
 type Handler struct {
@@ -10,7 +12,12 @@ type Handler struct {
 }
 
 func (*Handler) RecommendMovies(ctx context.Context, req *movie.RecommendReq) (*movie.RecommendResp, error) {
-	return nil, nil
+	log.Printf("%+v", req)
+	rCtx := service.NewRecommendContext(ctx, req)
+	service.NewRecommendService().RecommendMovies(rCtx)
+	log.Printf("%+v", rCtx.Resp)
+
+	return rCtx.Resp, nil
 }
 
 func (*Handler) GetMovieDetail(ctx context.Context, req *movie.MovieDetailReq) (*movie.MovieDetailResp, error) {
@@ -21,6 +28,6 @@ func (*Handler) SearchMovies(ctx context.Context, req *movie.SearchReq) (*movie.
 	return nil, nil
 }
 
-func (*Handler) CreateMovie(ctx context.Context, req *movie.CreateReq) (*movie.CreateResp, error) {
+func (*Handler) RecommendFeedback(ctx context.Context, req *movie.FeedbackReq) (*movie.FeedbackResp, error) {
 	return nil, nil
 }

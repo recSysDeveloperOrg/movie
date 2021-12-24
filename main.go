@@ -3,6 +3,7 @@ package main
 import (
 	"movie/config"
 	"movie/model"
+	"movie/rpc"
 )
 
 func main() {
@@ -13,6 +14,9 @@ func main() {
 		panic(err)
 	}
 	if err := model.Disconnect(); err != nil {
+		panic(err)
+	}
+	if err := rpc.InitRpcClients(); err != nil {
 		panic(err)
 	}
 }

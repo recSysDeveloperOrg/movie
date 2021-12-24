@@ -10,10 +10,10 @@ type Config struct {
 }
 
 type MongoDB struct {
-	Url                  string `json:"url"`
-	DBName               string `json:"DBName"`
-	User                 string `json:"user"`
-	Password             string `json:"password"`
+	Url      string `json:"url"`
+	DBName   string `json:"DBName"`
+	User     string `json:"user"`
+	Password string `json:"password"`
 }
 
 var cfg Config

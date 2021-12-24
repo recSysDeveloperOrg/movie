@@ -21,7 +21,7 @@ type MovieServiceClient interface {
 	RecommendMovies(ctx context.Context, in *RecommendReq, opts ...grpc.CallOption) (*RecommendResp, error)
 	GetMovieDetail(ctx context.Context, in *MovieDetailReq, opts ...grpc.CallOption) (*MovieDetailResp, error)
 	SearchMovies(ctx context.Context, in *SearchReq, opts ...grpc.CallOption) (*SearchResp, error)
-	CreateMovie(ctx context.Context, in *CreateReq, opts ...grpc.CallOption) (*CreateResp, error)
+	RecommendFeedback(ctx context.Context, in *FeedbackReq, opts ...grpc.CallOption) (*FeedbackResp, error)
 }
 
 type movieServiceClient struct {
@@ -59,9 +59,9 @@ func (c *movieServiceClient) SearchMovies(ctx context.Context, in *SearchReq, op
 	return out, nil
 }
 
-func (c *movieServiceClient) CreateMovie(ctx context.Context, in *CreateReq, opts ...grpc.CallOption) (*CreateResp, error) {
-	out := new(CreateResp)
-	err := c.cc.Invoke(ctx, "/MovieService/CreateMovie", in, out, opts...)
+func (c *movieServiceClient) RecommendFeedback(ctx context.Context, in *FeedbackReq, opts ...grpc.CallOption) (*FeedbackResp, error) {
+	out := new(FeedbackResp)
+	err := c.cc.Invoke(ctx, "/MovieService/RecommendFeedback", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +75,7 @@ type MovieServiceServer interface {
 	RecommendMovies(context.Context, *RecommendReq) (*RecommendResp, error)
 	GetMovieDetail(context.Context, *MovieDetailReq) (*MovieDetailResp, error)
 	SearchMovies(context.Context, *SearchReq) (*SearchResp, error)
-	CreateMovie(context.Context, *CreateReq) (*CreateResp, error)
+	RecommendFeedback(context.Context, *FeedbackReq) (*FeedbackResp, error)
 	mustEmbedUnimplementedMovieServiceServer()
 }
 
@@ -92,8 +92,8 @@ func (UnimplementedMovieServiceServer) GetMovieDetail(context.Context, *MovieDet
 func (UnimplementedMovieServiceServer) SearchMovies(context.Context, *SearchReq) (*SearchResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchMovies not implemented")
 }
-func (UnimplementedMovieServiceServer) CreateMovie(context.Context, *CreateReq) (*CreateResp, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateMovie not implemented")
+func (UnimplementedMovieServiceServer) RecommendFeedback(context.Context, *FeedbackReq) (*FeedbackResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RecommendFeedback not implemented")
 }
 func (UnimplementedMovieServiceServer) mustEmbedUnimplementedMovieServiceServer() {}
 
@@ -162,20 +162,20 @@ func _MovieService_SearchMovies_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
-func _MovieService_CreateMovie_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateReq)
+func _MovieService_RecommendFeedback_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FeedbackReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MovieServiceServer).CreateMovie(ctx, in)
+		return srv.(MovieServiceServer).RecommendFeedback(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/MovieService/CreateMovie",
+		FullMethod: "/MovieService/RecommendFeedback",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MovieServiceServer).CreateMovie(ctx, req.(*CreateReq))
+		return srv.(MovieServiceServer).RecommendFeedback(ctx, req.(*FeedbackReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -200,8 +200,8 @@ var MovieService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _MovieService_SearchMovies_Handler,
 		},
 		{
-			MethodName: "CreateMovie",
-			Handler:    _MovieService_CreateMovie_Handler,
+			MethodName: "RecommendFeedback",
+			Handler:    _MovieService_RecommendFeedback_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -1,24 +1,38 @@
 syntax = "proto3";
-option go_package = "./gen;movie";
+option go_package = "./idl/gen/movie";
 
 message BaseResp {
     int64 err_no = 1;
     string err_msg = 2;
 }
-// 这里后面可以考虑加上推荐的原因
+enum RecommendReasonType {
+    RECOMMEND_REASON_TYPE_TAG = 0;
+    RECOMMEND_REASON_TYPE_MOVIE = 1;
+}
+message Participant {
+    string character = 1;
+    string name = 2;
+}
+message RecommendReason {
+    Movie movie_reason = 1;
+    string tag_reason = 2;
+    RecommendReasonType reason_type = 3;
+}
 message Movie {
     string id = 1;
     string title = 2;
     string pic_url = 3;
     optional string introduction = 4;
-    optional string participants = 5;
+    repeated Participant participant = 5;
     optional string release_date = 6;
     optional string language = 7;
+    optional RecommendReason reason = 8;
 }
 
 message RecommendReq {
     int64 page = 1;
     int64 offset = 2;
+    string user_id = 3;
 }
 message RecommendResp {
     BaseResp base_resp = 1;
@@ -28,6 +42,7 @@ message RecommendResp {
 
 message MovieDetailReq {
     string id = 1;
+    string user_id = 2;
 }
 message MovieDetailResp {
     BaseResp base_resp = 1;
@@ -38,6 +53,7 @@ message SearchReq {
     string keyword = 1;
     int64 page = 2;
     int64 offset = 3;
+    string user_id = 4;
 }
 message SearchResp {
     BaseResp base_resp = 1;
@@ -45,10 +61,15 @@ message SearchResp {
     int64 n_search = 3; // 搜索结果总数, 用于判定是否有下一页
 }
 
-message CreateReq {
-    Movie movie = 1;
+enum FeedbackType {
+    FEEDBACK_TYPE_MOVIE = 0;
+    FEEDBACK_TYPE_CATEGORY = 1;
 }
-message CreateResp {
+message FeedbackReq {
+    FeedbackType fb_type = 1;
+    string source_id = 2;
+}
+message FeedbackResp {
     BaseResp base_resp = 1;
 }
 
@@ -56,5 +77,5 @@ service MovieService {
     rpc RecommendMovies(RecommendReq) returns (RecommendResp) {}
     rpc GetMovieDetail(MovieDetailReq) returns (MovieDetailResp) {}
     rpc SearchMovies(SearchReq) returns (SearchResp) {}
-    rpc CreateMovie(CreateReq) returns (CreateResp) {}
+    rpc RecommendFeedback(FeedbackReq) returns (FeedbackResp) {}
 }
