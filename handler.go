@@ -25,7 +25,12 @@ func (*Handler) GetMovieDetail(ctx context.Context, req *movie.MovieDetailReq) (
 }
 
 func (*Handler) SearchMovies(ctx context.Context, req *movie.SearchReq) (*movie.SearchResp, error) {
-	return nil, nil
+	log.Printf("req:%+v", req)
+	sCtx := service.NewSearchServiceContext(ctx, req)
+	service.NewSearchService().SearchMovies(sCtx)
+	log.Printf("resp:%+v", sCtx.Resp)
+
+	return sCtx.Resp, nil
 }
 
 func (*Handler) RecommendFeedback(ctx context.Context, req *movie.FeedbackReq) (*movie.FeedbackResp, error) {

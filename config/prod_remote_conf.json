@@ -4,5 +4,9 @@
     "user": "admin",
     "password": "holy-shit-wtf.com",
     "DBName": "movie"
+  },
+  "elastic_search": {
+    "url": "http://110.42.250.18:9200",
+    "index": "movie"
   }
 }

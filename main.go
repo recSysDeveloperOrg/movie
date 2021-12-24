@@ -4,10 +4,11 @@ import (
 	"movie/config"
 	"movie/model"
 	"movie/rpc"
+	"movie/search"
 )
 
 func main() {
-	if err := config.InitConfig(config.DefaultCfgFile); err != nil {
+	if err := config.InitConfig(config.CfgFileMain); err != nil {
 		panic(err)
 	}
 	if err := model.InitModel(); err != nil {
@@ -17,6 +18,9 @@ func main() {
 		panic(err)
 	}
 	if err := rpc.InitRpcClients(); err != nil {
+		panic(err)
+	}
+	if err := search.InitES(); err != nil {
 		panic(err)
 	}
 }

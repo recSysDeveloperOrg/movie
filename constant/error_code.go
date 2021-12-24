@@ -25,6 +25,7 @@ var (
 	RetOperationForbidden = makeErrorCode(3, "不支持添加此过滤规则")
 	RetWriteRepoErr       = makeErrorCode(100, "写库错误:%v")
 	RetReadRepoErr        = makeErrorCode(101, "查库错误:%v")
+	RetSearchESErr        = makeErrorCode(102, "查ES错误:%v")
 	RetRpcCallFailed      = makeErrorCode(200, "调用下游错误")
 	RetSysErr             = makeErrorCode(999, "系统未知错误:%v")
 )

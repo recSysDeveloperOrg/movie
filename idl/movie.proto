@@ -56,11 +56,18 @@ message SearchReq {
     string keyword = 1;
     int64 page = 2;
     int64 offset = 3;
-    string user_id = 4;
+}
+enum MovieSearchEntryType {
+    MOVIE_SEARCH_ENTRY_TYPE_TITLE = 0;
+    MOVIE_SEARCH_ENTRY_TYPE_DETAIL = 1;
+}
+message MovieSearchEntry {
+    MovieSearchEntryType ms_entry_type = 1;
+    Movie movie = 2;
 }
 message SearchResp {
     BaseResp base_resp = 1;
-    repeated Movie movies = 2;
+    repeated MovieSearchEntry movies = 2;
     int64 n_search = 3; // 搜索结果总数, 用于判定是否有下一页
 }
 
