@@ -2,9 +2,11 @@ package service
 
 import (
 	"context"
+	"log"
 	. "movie/constant"
 	"movie/idl/gen/movie"
 	"movie/model"
+	"movie/rpc"
 	"strings"
 	"sync"
 )
@@ -50,6 +52,7 @@ func (s *QueryMovieDetailService) QueryMovieDetail(ctx *QueryMovieDetailContext)
 	if s.queryDetail(ctx); ctx.ErrCode != nil {
 		return
 	}
+	s.addViewLog(ctx)
 }
 
 func (*QueryMovieDetailService) checkParams(ctx *QueryMovieDetailContext) {
@@ -70,6 +73,18 @@ func (*QueryMovieDetailService) queryDetail(ctx *QueryMovieDetailContext) {
 		return
 	}
 	ctx.movie = modelMovie[ctx.Req.Id]
+}
+
+func (*QueryMovieDetailService) addViewLog(ctx *QueryMovieDetailContext) {
+	// user not login, that's fine
+	if strings.TrimSpace(ctx.Req.UserId) == "" {
+		return
+	}
+	go func() {
+		if _, err := rpc.AddViewLog(ctx.Ctx, ctx.Req.UserId, ctx.Req.Id); err != nil {
+			log.Printf("Add view log failed:%+v", err)
+		}
+	}()
 }
 
 func (*QueryMovieDetailService) buildResponse(ctx *QueryMovieDetailContext) {
