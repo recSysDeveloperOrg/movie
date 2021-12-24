@@ -6,10 +6,8 @@ import (
 	. "movie/constant"
 	"movie/idl/gen/movie"
 	"movie/idl/gen/recommend"
-	"movie/idl/gen/tag"
 	"movie/model"
 	"movie/rpc"
-	"strings"
 	"sync"
 )
 
@@ -24,11 +22,18 @@ type RecommendContext struct {
 
 	recommendMovies []*recommend.RecommendEntry
 	movieID2Movie   map[string]*model.Movie
-	tagID2Tag       map[string]*tag.Tag
+	tagID2Tag       map[string]string
 }
 
 var recommendService *RecommendService
 var recommendServiceOnce sync.Once
+
+var recommendSourceType2RecommendReasonType = map[recommend.RecommendSourceType]movie.RecommendReasonType{
+	recommend.RecommendSourceType_RECOMMEND_SOURCE_TYPE_RATING: movie.RecommendReasonType_RECOMMEND_REASON_TYPE_MOVIE,
+	recommend.RecommendSourceType_RECOMMEND_SOURCE_TYPE_TAG:    movie.RecommendReasonType_RECOMMEND_REASON_TYPE_TAG,
+	recommend.RecommendSourceType_RECOMMEND_SOURCE_TYPE_LOG:    movie.RecommendReasonType_RECOMMEND_REASON_TYPE_LOG,
+	recommend.RecommendSourceType_RECOMMEND_SOURCE_TYPE_TOP_K:  movie.RecommendReasonType_RECOMMEND_REASON_TYPE_TOP_K,
+}
 
 func NewRecommendService() *RecommendService {
 	recommendServiceOnce.Do(func() {
@@ -71,10 +76,6 @@ func (s *RecommendService) checkParams(ctx *RecommendContext) {
 		ctx.ErrCode = BuildErrCode("offset < 0", RetParamsErr)
 		return
 	}
-	if strings.TrimSpace(req.UserId) == "" {
-		ctx.ErrCode = BuildErrCode("empty userID", RetParamsErr)
-		return
-	}
 }
 
 func (s *RecommendService) fetchRecommendMovies(ctx *RecommendContext) {
@@ -110,6 +111,10 @@ func (s *RecommendService) fillMovieBasedDetails(ctx *RecommendContext) {
 	movieIDs := make([]string, 0, 2*len(recMovies))
 	for _, recMovie := range recMovies {
 		movieIDs = append(movieIDs, recMovie.MovieId)
+		// 特殊处理TopK推荐SourceID为空
+		if recMovie.SourceId == "" {
+			continue
+		}
 		movieIDs = append(movieIDs, recMovie.SourceId)
 	}
 	movieID2Movie, err := model.NewMovieDao().FindMovies(ctx.Ctx, movieIDs)
@@ -136,12 +141,12 @@ func (s *RecommendService) fillTagBasedDetails(ctx *RecommendContext) {
 	for _, recMovieID := range ctx.recommendMovies {
 		tagIDs = append(tagIDs, recMovieID.SourceId)
 	}
-	tagResp, err := rpc.QueryTagByTagID(ctx.Ctx, tagIDs)
+	tagID2TagContent, err := model.NewTagDao().FindTagContentByTagID(ctx.Ctx, tagIDs)
 	if err != nil {
-		ctx.ErrCode = BuildErrCode(err, RetRpcCallFailed)
+		ctx.ErrCode = BuildErrCode(ctx, RetReadRepoErr)
 		return
 	}
-	ctx.tagID2Tag = tagResp.TagId_2Tag
+	ctx.tagID2Tag = tagID2TagContent
 }
 
 func (s *RecommendService) buildResponse(ctx *RecommendContext) {
@@ -155,30 +160,32 @@ func (s *RecommendService) buildResponse(ctx *RecommendContext) {
 	if len(ctx.recommendMovies) == 0 {
 		return
 	}
-	switch ctx.recommendMovies[0].RsType {
-	case recommend.RecommendSourceType_RECOMMEND_SOURCE_TYPE_TAG:
+	rsType := ctx.recommendMovies[0].RsType
+	if rsType == recommend.RecommendSourceType_RECOMMEND_SOURCE_TYPE_TAG {
 		s.buildTagBasedResponse(ctx)
-	case recommend.RecommendSourceType_RECOMMEND_SOURCE_TYPE_RATING,
-		recommend.RecommendSourceType_RECOMMEND_SOURCE_TYPE_LOG,
-		recommend.RecommendSourceType_RECOMMEND_SOURCE_TYPE_TOP_K:
-		s.buildMovieBasedResponse(ctx)
+		return
 	}
+	s.buildMovieBasedResponse(ctx, rsType)
 }
 
 func (s *RecommendService) buildTagBasedResponse(ctx *RecommendContext) {
 	ctx.Resp.Movies = s.buildMovies(ctx, func(sourceID string) *movie.RecommendReason {
 		return &movie.RecommendReason{
 			ReasonType: movie.RecommendReasonType_RECOMMEND_REASON_TYPE_TAG,
-			TagReason:  ctx.tagID2Tag[sourceID].Content,
+			TagReason:  ctx.tagID2Tag[sourceID],
 		}
 	})
 }
 
-func (s *RecommendService) buildMovieBasedResponse(ctx *RecommendContext) {
+func (s *RecommendService) buildMovieBasedResponse(ctx *RecommendContext, rsType recommend.RecommendSourceType) {
 	ctx.Resp.Movies = s.buildMovies(ctx, func(sourceID string) *movie.RecommendReason {
 		sourceModelMovie := ctx.movieID2Movie[sourceID]
+		// 对于topK推荐来说，sourceID为空，需要特殊处理
+		if sourceModelMovie == nil {
+			sourceModelMovie = &model.Movie{}
+		}
 		return &movie.RecommendReason{
-			ReasonType: movie.RecommendReasonType_RECOMMEND_REASON_TYPE_MOVIE,
+			ReasonType: recommendSourceType2RecommendReasonType[rsType],
 			MovieReason: &movie.Movie{
 				Id:     sourceModelMovie.Id,
 				Title:  sourceModelMovie.Title,
@@ -194,13 +201,14 @@ func (*RecommendService) buildMovies(ctx *RecommendContext,
 	for _, recPair := range ctx.recommendMovies {
 		modelMovie := ctx.movieID2Movie[recPair.MovieId]
 		respMovie := &movie.Movie{
-			Id:           modelMovie.Id,
-			Title:        modelMovie.Title,
-			PicUrl:       modelMovie.PicUrl,
-			Introduction: &modelMovie.Introduction,
-			ReleaseDate:  &modelMovie.ReleaseDate,
-			Language:     &modelMovie.Language,
-			Reason:       reasonFillFunc(recPair.SourceId),
+			Id:            modelMovie.Id,
+			Title:         modelMovie.Title,
+			PicUrl:        modelMovie.PicUrl,
+			Introduction:  &modelMovie.Introduction,
+			ReleaseDate:   &modelMovie.ReleaseDate,
+			Language:      &modelMovie.Language,
+			Reason:        reasonFillFunc(recPair.SourceId),
+			AverageRating: &modelMovie.AverageRating,
 		}
 		for _, participant := range modelMovie.Participants {
 			respMovie.Participant = append(respMovie.Participant, &movie.Participant{

@@ -1,8 +1,8 @@
 {
   "mongodb": {
-    "url": "mongodb://49.235.0.155:27017",
+    "url": "mongodb://110.42.250.18:27017",
     "user": "admin",
-    "password": "123456",
+    "password": "holy-shit-wtf.com",
     "DBName": "movie"
   }
 }

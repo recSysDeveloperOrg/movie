@@ -8,6 +8,8 @@ message BaseResp {
 enum RecommendReasonType {
     RECOMMEND_REASON_TYPE_TAG = 0;
     RECOMMEND_REASON_TYPE_MOVIE = 1;
+    RECOMMEND_REASON_TYPE_LOG = 2;
+    RECOMMEND_REASON_TYPE_TOP_K = 3;
 }
 message Participant {
     string character = 1;
@@ -27,6 +29,7 @@ message Movie {
     optional string release_date = 6;
     optional string language = 7;
     optional RecommendReason reason = 8;
+    optional double average_rating = 9;
 }
 
 message RecommendReq {

@@ -3,6 +3,7 @@ package model
 import (
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"sync"
 )
 
@@ -26,20 +27,21 @@ type Participant struct {
 }
 
 type Movie struct {
-	Id           string         `bson:"_id"`
-	Title        string         `bson:"title"`
-	PicUrl       string         `bson:"pic_url"`
-	Introduction string         `bson:"introduction"`
-	Participants []*Participant `bson:"participants"`
-	ReleaseDate  string         `bson:"release_date"`
-	Language     string         `bson:"language"`
+	Id            string         `bson:"_id"`
+	Title         string         `bson:"title"`
+	PicUrl        string         `bson:"pic_url"`
+	Introduction  string         `bson:"introduction"`
+	Participants  []*Participant `bson:"participants"`
+	ReleaseDate   string         `bson:"release_date"`
+	Language      string         `bson:"language"`
+	AverageRating float64        `bson:"average_rating"`
 }
 
 var movieID2MovieCache = make(map[string]*Movie)
 var movieID2MovieCacheLock = sync.RWMutex{}
 
 func (*MovieDao) FindMovies(ctx context.Context, movieIds []string) (map[string]*Movie, error) {
-	cacheMissIDs := make([]string, 0)
+	cacheMissIDs := make([]primitive.ObjectID, 0)
 	res := make(map[string]*Movie)
 	movieID2MovieCacheLock.RLock()
 	defer movieID2MovieCacheLock.RUnlock()
@@ -49,7 +51,11 @@ func (*MovieDao) FindMovies(ctx context.Context, movieIds []string) (map[string]
 			continue
 		}
 
-		cacheMissIDs = append(cacheMissIDs, movieID)
+		movieObjectID, err := primitive.ObjectIDFromHex(movieID)
+		if err != nil {
+			return nil, err
+		}
+		cacheMissIDs = append(cacheMissIDs, movieObjectID)
 	}
 
 	var movies []*Movie

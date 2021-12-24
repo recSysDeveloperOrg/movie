@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	if err := config.InitConfig(); err != nil {
+	if err := config.InitConfig(config.DefaultCfgFile); err != nil {
 		panic(err)
 	}
 	if err := model.InitModel(); err != nil {
