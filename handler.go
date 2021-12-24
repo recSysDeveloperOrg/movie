@@ -21,7 +21,12 @@ func (*Handler) RecommendMovies(ctx context.Context, req *movie.RecommendReq) (*
 }
 
 func (*Handler) GetMovieDetail(ctx context.Context, req *movie.MovieDetailReq) (*movie.MovieDetailResp, error) {
-	return nil, nil
+	log.Printf("req:%+v", req)
+	qCtx := service.NewQueryMovieDetailContext(ctx, req)
+	service.NewQueryMovieDetailService().QueryMovieDetail(qCtx)
+	log.Printf("resp:%+v", qCtx.Resp)
+
+	return qCtx.Resp, nil
 }
 
 func (*Handler) SearchMovies(ctx context.Context, req *movie.SearchReq) (*movie.SearchResp, error) {
@@ -34,5 +39,10 @@ func (*Handler) SearchMovies(ctx context.Context, req *movie.SearchReq) (*movie.
 }
 
 func (*Handler) RecommendFeedback(ctx context.Context, req *movie.FeedbackReq) (*movie.FeedbackResp, error) {
-	return nil, nil
+	log.Printf("req:%+v", req)
+	rCtx := service.NewRecommendFeedbackContext(ctx, req)
+	service.NewRecommendFeedbackService().Feedback(rCtx)
+	log.Printf("resp:%+v", rCtx.Resp)
+
+	return rCtx.Resp, nil
 }

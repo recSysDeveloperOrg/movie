@@ -78,6 +78,7 @@ enum FeedbackType {
 message FeedbackReq {
     FeedbackType fb_type = 1;
     string source_id = 2;
+    string user_id = 3;
 }
 message FeedbackResp {
     BaseResp base_resp = 1;

@@ -13,7 +13,7 @@ import (
 type SearchService struct {
 }
 
-type SearchServiceContext struct {
+type SearchContext struct {
 	Ctx     context.Context
 	Req     *movie.SearchReq
 	Resp    *movie.SearchResp
@@ -35,8 +35,8 @@ func NewSearchService() *SearchService {
 	return searchService
 }
 
-func NewSearchServiceContext(ctx context.Context, req *movie.SearchReq) *SearchServiceContext {
-	return &SearchServiceContext{
+func NewSearchServiceContext(ctx context.Context, req *movie.SearchReq) *SearchContext {
+	return &SearchContext{
 		Ctx: ctx,
 		Req: req,
 		Resp: &movie.SearchResp{
@@ -45,7 +45,7 @@ func NewSearchServiceContext(ctx context.Context, req *movie.SearchReq) *SearchS
 	}
 }
 
-func (s *SearchService) SearchMovies(ctx *SearchServiceContext) {
+func (s *SearchService) SearchMovies(ctx *SearchContext) {
 	defer s.buildResponse(ctx)
 	if s.checkParams(ctx); ctx.ErrCode != nil {
 		return
@@ -55,7 +55,7 @@ func (s *SearchService) SearchMovies(ctx *SearchServiceContext) {
 	}
 }
 
-func (*SearchService) checkParams(ctx *SearchServiceContext) {
+func (*SearchService) checkParams(ctx *SearchContext) {
 	if ctx.Req.Page < 0 {
 		ctx.ErrCode = BuildErrCode("page < 0 is not allowed", RetParamsErr)
 		return
@@ -70,7 +70,7 @@ func (*SearchService) checkParams(ctx *SearchServiceContext) {
 	}
 }
 
-func (*SearchService) doSearchMovies(ctx *SearchServiceContext) {
+func (*SearchService) doSearchMovies(ctx *SearchContext) {
 	byTitleIDs, byDetailIDs, err := search.GetMovies(ctx.Ctx, int(ctx.Req.Page),
 		int(ctx.Req.Offset), ctx.Req.Keyword)
 	if err != nil {
@@ -87,7 +87,7 @@ func (*SearchService) doSearchMovies(ctx *SearchServiceContext) {
 	ctx.byDetailMovieIDs = byDetailIDs
 }
 
-func (s *SearchService) buildResponse(ctx *SearchServiceContext) {
+func (s *SearchService) buildResponse(ctx *SearchContext) {
 	errCode := RetSuccess
 	if ctx.ErrCode != nil {
 		errCode = ctx.ErrCode
@@ -98,7 +98,7 @@ func (s *SearchService) buildResponse(ctx *SearchServiceContext) {
 	s.movie2SearchEntry(ctx, ctx.byDetailMovieIDs, movie.MovieSearchEntryType_MOVIE_SEARCH_ENTRY_TYPE_DETAIL)
 }
 
-func (*SearchService) movie2SearchEntry(ctx *SearchServiceContext,
+func (*SearchService) movie2SearchEntry(ctx *SearchContext,
 	movies []string, msType movie.MovieSearchEntryType) {
 	for _, id := range movies {
 		modelMovie := ctx.movieID2Movie[id]
