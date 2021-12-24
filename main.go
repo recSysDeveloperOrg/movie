@@ -19,9 +19,6 @@ func main() {
 	if err := model.InitModel(); err != nil {
 		panic(err)
 	}
-	if err := model.Disconnect(); err != nil {
-		panic(err)
-	}
 	if err := rpc.InitRpcClients(); err != nil {
 		panic(err)
 	}

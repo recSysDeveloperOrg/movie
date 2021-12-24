@@ -61,9 +61,7 @@ func (s *RecommendService) RecommendMovies(ctx *RecommendContext) {
 	if s.fetchRecommendMovies(ctx); ctx.ErrCode != nil {
 		return
 	}
-	if s.fillDetails(ctx); ctx.ErrCode != nil {
-		return
-	}
+	s.fillDetails(ctx)
 }
 
 func (s *RecommendService) checkParams(ctx *RecommendContext) {

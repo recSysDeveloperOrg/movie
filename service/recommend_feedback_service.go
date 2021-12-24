@@ -51,9 +51,7 @@ func (s *RecommendFeedbackService) Feedback(ctx *RecommendFeedbackContext) {
 	if s.checkParams(ctx); ctx.ErrCode != nil {
 		return
 	}
-	if s.sendFeedback(ctx); ctx.ErrCode != nil {
-		return
-	}
+	s.sendFeedback(ctx)
 }
 
 func (*RecommendFeedbackService) checkParams(ctx *RecommendFeedbackContext) {

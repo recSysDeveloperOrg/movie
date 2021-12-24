@@ -50,9 +50,7 @@ func (s *SearchService) SearchMovies(ctx *SearchContext) {
 	if s.checkParams(ctx); ctx.ErrCode != nil {
 		return
 	}
-	if s.doSearchMovies(ctx); ctx.ErrCode != nil {
-		return
-	}
+	s.doSearchMovies(ctx)
 }
 
 func (*SearchService) checkParams(ctx *SearchContext) {
