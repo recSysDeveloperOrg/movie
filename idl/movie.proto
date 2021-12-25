@@ -86,7 +86,7 @@ message FeedbackResp {
 
 message ModifyMovieRatingReq {
     string movie_id = 1;
-    int64 n_update = 2;
+    double n_update = 2;
     bool is_new_user = 3;
 }
 message ModifyMovieRatingResp {
