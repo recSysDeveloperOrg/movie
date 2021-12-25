@@ -1,4 +1,5 @@
 syntax = "proto3";
+package movie;
 option go_package = "./idl/gen/movie";
 
 message BaseResp {

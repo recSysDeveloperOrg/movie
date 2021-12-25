@@ -35,7 +35,7 @@ func NewMovieServiceClient(cc grpc.ClientConnInterface) MovieServiceClient {
 
 func (c *movieServiceClient) RecommendMovies(ctx context.Context, in *RecommendReq, opts ...grpc.CallOption) (*RecommendResp, error) {
 	out := new(RecommendResp)
-	err := c.cc.Invoke(ctx, "/MovieService/RecommendMovies", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/movie.MovieService/RecommendMovies", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +44,7 @@ func (c *movieServiceClient) RecommendMovies(ctx context.Context, in *RecommendR
 
 func (c *movieServiceClient) GetMovieDetail(ctx context.Context, in *MovieDetailReq, opts ...grpc.CallOption) (*MovieDetailResp, error) {
 	out := new(MovieDetailResp)
-	err := c.cc.Invoke(ctx, "/MovieService/GetMovieDetail", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/movie.MovieService/GetMovieDetail", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +53,7 @@ func (c *movieServiceClient) GetMovieDetail(ctx context.Context, in *MovieDetail
 
 func (c *movieServiceClient) SearchMovies(ctx context.Context, in *SearchReq, opts ...grpc.CallOption) (*SearchResp, error) {
 	out := new(SearchResp)
-	err := c.cc.Invoke(ctx, "/MovieService/SearchMovies", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/movie.MovieService/SearchMovies", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +62,7 @@ func (c *movieServiceClient) SearchMovies(ctx context.Context, in *SearchReq, op
 
 func (c *movieServiceClient) RecommendFeedback(ctx context.Context, in *FeedbackReq, opts ...grpc.CallOption) (*FeedbackResp, error) {
 	out := new(FeedbackResp)
-	err := c.cc.Invoke(ctx, "/MovieService/RecommendFeedback", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/movie.MovieService/RecommendFeedback", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -71,7 +71,7 @@ func (c *movieServiceClient) RecommendFeedback(ctx context.Context, in *Feedback
 
 func (c *movieServiceClient) ModifyMovieRating(ctx context.Context, in *ModifyMovieRatingReq, opts ...grpc.CallOption) (*ModifyMovieRatingResp, error) {
 	out := new(ModifyMovieRatingResp)
-	err := c.cc.Invoke(ctx, "/MovieService/ModifyMovieRating", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/movie.MovieService/ModifyMovieRating", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -132,7 +132,7 @@ func _MovieService_RecommendMovies_Handler(srv interface{}, ctx context.Context,
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/MovieService/RecommendMovies",
+		FullMethod: "/movie.MovieService/RecommendMovies",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MovieServiceServer).RecommendMovies(ctx, req.(*RecommendReq))
@@ -150,7 +150,7 @@ func _MovieService_GetMovieDetail_Handler(srv interface{}, ctx context.Context, 
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/MovieService/GetMovieDetail",
+		FullMethod: "/movie.MovieService/GetMovieDetail",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MovieServiceServer).GetMovieDetail(ctx, req.(*MovieDetailReq))
@@ -168,7 +168,7 @@ func _MovieService_SearchMovies_Handler(srv interface{}, ctx context.Context, de
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/MovieService/SearchMovies",
+		FullMethod: "/movie.MovieService/SearchMovies",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MovieServiceServer).SearchMovies(ctx, req.(*SearchReq))
@@ -186,7 +186,7 @@ func _MovieService_RecommendFeedback_Handler(srv interface{}, ctx context.Contex
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/MovieService/RecommendFeedback",
+		FullMethod: "/movie.MovieService/RecommendFeedback",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MovieServiceServer).RecommendFeedback(ctx, req.(*FeedbackReq))
@@ -204,7 +204,7 @@ func _MovieService_ModifyMovieRating_Handler(srv interface{}, ctx context.Contex
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/MovieService/ModifyMovieRating",
+		FullMethod: "/movie.MovieService/ModifyMovieRating",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MovieServiceServer).ModifyMovieRating(ctx, req.(*ModifyMovieRatingReq))
@@ -216,7 +216,7 @@ func _MovieService_ModifyMovieRating_Handler(srv interface{}, ctx context.Contex
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var MovieService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "MovieService",
+	ServiceName: "movie.MovieService",
 	HandlerType: (*MovieServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
