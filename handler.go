@@ -46,3 +46,9 @@ func (*Handler) RecommendFeedback(ctx context.Context, req *movie.FeedbackReq) (
 
 	return rCtx.Resp, nil
 }
+
+// TODO
+func (*Handler) ModifyMovieRating(ctx context.Context, req *movie.ModifyMovieRatingReq) (
+	*movie.ModifyMovieRatingResp, error) {
+	return nil, nil
+}

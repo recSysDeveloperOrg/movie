@@ -84,9 +84,19 @@ message FeedbackResp {
     BaseResp base_resp = 1;
 }
 
+message ModifyMovieRatingReq {
+    string movie_id = 1;
+    int64 n_update = 2;
+    bool is_new_user = 3;
+}
+message ModifyMovieRatingResp {
+    BaseResp base_resp = 1;
+}
+
 service MovieService {
     rpc RecommendMovies(RecommendReq) returns (RecommendResp) {}
     rpc GetMovieDetail(MovieDetailReq) returns (MovieDetailResp) {}
     rpc SearchMovies(SearchReq) returns (SearchResp) {}
     rpc RecommendFeedback(FeedbackReq) returns (FeedbackResp) {}
+    rpc ModifyMovieRating(ModifyMovieRatingReq) returns (ModifyMovieRatingResp) {}
 }

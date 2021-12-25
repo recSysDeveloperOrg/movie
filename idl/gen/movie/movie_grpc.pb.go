@@ -22,6 +22,7 @@ type MovieServiceClient interface {
 	GetMovieDetail(ctx context.Context, in *MovieDetailReq, opts ...grpc.CallOption) (*MovieDetailResp, error)
 	SearchMovies(ctx context.Context, in *SearchReq, opts ...grpc.CallOption) (*SearchResp, error)
 	RecommendFeedback(ctx context.Context, in *FeedbackReq, opts ...grpc.CallOption) (*FeedbackResp, error)
+	ModifyMovieRating(ctx context.Context, in *ModifyMovieRatingReq, opts ...grpc.CallOption) (*ModifyMovieRatingResp, error)
 }
 
 type movieServiceClient struct {
@@ -68,6 +69,15 @@ func (c *movieServiceClient) RecommendFeedback(ctx context.Context, in *Feedback
 	return out, nil
 }
 
+func (c *movieServiceClient) ModifyMovieRating(ctx context.Context, in *ModifyMovieRatingReq, opts ...grpc.CallOption) (*ModifyMovieRatingResp, error) {
+	out := new(ModifyMovieRatingResp)
+	err := c.cc.Invoke(ctx, "/MovieService/ModifyMovieRating", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MovieServiceServer is the server API for MovieService service.
 // All implementations must embed UnimplementedMovieServiceServer
 // for forward compatibility
@@ -76,6 +86,7 @@ type MovieServiceServer interface {
 	GetMovieDetail(context.Context, *MovieDetailReq) (*MovieDetailResp, error)
 	SearchMovies(context.Context, *SearchReq) (*SearchResp, error)
 	RecommendFeedback(context.Context, *FeedbackReq) (*FeedbackResp, error)
+	ModifyMovieRating(context.Context, *ModifyMovieRatingReq) (*ModifyMovieRatingResp, error)
 	mustEmbedUnimplementedMovieServiceServer()
 }
 
@@ -94,6 +105,9 @@ func (UnimplementedMovieServiceServer) SearchMovies(context.Context, *SearchReq)
 }
 func (UnimplementedMovieServiceServer) RecommendFeedback(context.Context, *FeedbackReq) (*FeedbackResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RecommendFeedback not implemented")
+}
+func (UnimplementedMovieServiceServer) ModifyMovieRating(context.Context, *ModifyMovieRatingReq) (*ModifyMovieRatingResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ModifyMovieRating not implemented")
 }
 func (UnimplementedMovieServiceServer) mustEmbedUnimplementedMovieServiceServer() {}
 
@@ -180,6 +194,24 @@ func _MovieService_RecommendFeedback_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MovieService_ModifyMovieRating_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ModifyMovieRatingReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MovieServiceServer).ModifyMovieRating(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MovieService/ModifyMovieRating",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MovieServiceServer).ModifyMovieRating(ctx, req.(*ModifyMovieRatingReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // MovieService_ServiceDesc is the grpc.ServiceDesc for MovieService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -202,6 +234,10 @@ var MovieService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RecommendFeedback",
 			Handler:    _MovieService_RecommendFeedback_Handler,
+		},
+		{
+			MethodName: "ModifyMovieRating",
+			Handler:    _MovieService_ModifyMovieRating_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
