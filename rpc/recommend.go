@@ -2,9 +2,7 @@ package rpc
 
 import (
 	"context"
-	"errors"
 	"log"
-	"movie/constant"
 	"movie/idl/gen/movie"
 	"movie/idl/gen/recommend"
 )
@@ -26,9 +24,6 @@ func RecommendMovies(ctx context.Context, userID string, page, offset int64) (*r
 		log.Printf("rpc failed:%v", err)
 		return nil, err
 	}
-	if resp.BaseResp == nil || resp.BaseResp.Code != constant.RetSuccess.Code {
-		return nil, errors.New("response code not zero")
-	}
 
 	log.Printf("rpc response from recommend:%+v", resp)
 	return resp, nil
@@ -46,9 +41,6 @@ func SendFeedback(ctx context.Context, userID string, uninterestedID string,
 	if err != nil {
 		return nil, err
 	}
-	if resp.BaseResp == nil || resp.BaseResp.Code != constant.RetSuccess.Code {
-		return nil, errors.New("response code not zero")
-	}
 
 	log.Printf("rpc response from recommend:%+v", resp)
 	return resp, nil
@@ -63,9 +55,6 @@ func AddViewLog(ctx context.Context, userID string, movieID string) (*recommend.
 	resp, err := RecommendClient.AddViewLog(ctx, req)
 	if err != nil {
 		return nil, err
-	}
-	if resp.BaseResp == nil || resp.BaseResp.Code != constant.RetSuccess.Code {
-		return nil, errors.New("response code not zero")
 	}
 
 	log.Printf("rpc response from recommend:%+v", resp)
