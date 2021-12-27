@@ -50,5 +50,10 @@ func (*Handler) RecommendFeedback(ctx context.Context, req *movie.FeedbackReq) (
 // TODO
 func (*Handler) ModifyMovieRating(ctx context.Context, req *movie.ModifyMovieRatingReq) (
 	*movie.ModifyMovieRatingResp, error) {
-	return nil, nil
+	return &movie.ModifyMovieRatingResp{
+		BaseResp: &movie.BaseResp{
+			ErrNo: 0,
+			ErrMsg: "成功",
+		},
+	}, nil
 }

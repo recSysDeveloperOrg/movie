@@ -80,11 +80,9 @@ func (*QueryMovieDetailService) addViewLog(ctx *QueryMovieDetailContext) {
 	if strings.TrimSpace(ctx.Req.UserId) == "" {
 		return
 	}
-	go func() {
-		if _, err := rpc.AddViewLog(ctx.Ctx, ctx.Req.UserId, ctx.Req.Id); err != nil {
-			log.Printf("Add view log failed:%+v", err)
-		}
-	}()
+	if _, err := rpc.AddViewLog(ctx.Ctx, ctx.Req.UserId, ctx.Req.Id); err != nil {
+		log.Printf("Add view log failed:%+v", err)
+	}
 }
 
 func (*QueryMovieDetailService) buildResponse(ctx *QueryMovieDetailContext) {

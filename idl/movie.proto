@@ -7,10 +7,11 @@ message BaseResp {
     string err_msg = 2;
 }
 enum RecommendReasonType {
-    RECOMMEND_REASON_TYPE_TAG = 0;
-    RECOMMEND_REASON_TYPE_MOVIE = 1;
-    RECOMMEND_REASON_TYPE_LOG = 2;
-    RECOMMEND_REASON_TYPE_TOP_K = 3;
+    RECOMMEND_REASON_TYPE_UNSPECIFIED = 0;
+    RECOMMEND_REASON_TYPE_TAG = 1;
+    RECOMMEND_REASON_TYPE_MOVIE = 2;
+    RECOMMEND_REASON_TYPE_LOG = 3;
+    RECOMMEND_REASON_TYPE_TOP_K = 4;
 }
 message Participant {
     string character = 1;
@@ -59,8 +60,9 @@ message SearchReq {
     int64 offset = 3;
 }
 enum MovieSearchEntryType {
-    MOVIE_SEARCH_ENTRY_TYPE_TITLE = 0;
-    MOVIE_SEARCH_ENTRY_TYPE_DETAIL = 1;
+    MOVIE_SEARCH_ENTRY_TYPE_UNSPECIFIED = 0;
+    MOVIE_SEARCH_ENTRY_TYPE_TITLE = 1;
+    MOVIE_SEARCH_ENTRY_TYPE_DETAIL = 2;
 }
 message MovieSearchEntry {
     MovieSearchEntryType ms_entry_type = 1;
