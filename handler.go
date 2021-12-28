@@ -47,13 +47,12 @@ func (*Handler) RecommendFeedback(ctx context.Context, req *movie.FeedbackReq) (
 	return rCtx.Resp, nil
 }
 
-// TODO
 func (*Handler) ModifyMovieRating(ctx context.Context, req *movie.ModifyMovieRatingReq) (
 	*movie.ModifyMovieRatingResp, error) {
-	return &movie.ModifyMovieRatingResp{
-		BaseResp: &movie.BaseResp{
-			ErrNo: 0,
-			ErrMsg: "成功",
-		},
-	}, nil
+	log.Printf("req:%+v", req)
+	rCtx := service.NewUpdateMovieRatingContext(ctx, req)
+	service.NewUpdateMovieRatingService().UpdateMovieRating(rCtx)
+	log.Printf("resp:%+v", rCtx.Resp)
+
+	return rCtx.Resp, nil
 }
