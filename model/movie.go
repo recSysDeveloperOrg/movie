@@ -2,9 +2,10 @@ package model
 
 import (
 	"context"
+	"sync"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"sync"
 )
 
 type MovieDao struct {
@@ -35,6 +36,7 @@ type Movie struct {
 	ReleaseDate   string         `bson:"release_date"`
 	Language      string         `bson:"language"`
 	AverageRating float64        `bson:"average_rating"`
+	UniqueCount   int64          `bson:"unique_rating_cnt"`
 }
 
 var movieID2MovieCache = make(map[string]*Movie)
@@ -80,4 +82,22 @@ func (*MovieDao) FindMovies(ctx context.Context, movieIds []string) (map[string]
 	}(movies)
 
 	return res, nil
+}
+
+func (*MovieDao) UpdateMovies(ctx context.Context, movie *Movie) error {
+	movieObjectID, err := primitive.ObjectIDFromHex(movie.Id)
+	if err != nil {
+		return err
+	}
+	whereMap := bson.D{{"_id", movieObjectID}}
+	updateMap := bson.D{{
+		"$set",
+		bson.D{
+			{"average_rating", movie.AverageRating},
+			{"unique_rating_cnt", movie.UniqueCount},
+		},
+	}}
+
+	_, err = GetClient().Collection(CollectionMovie).UpdateOne(ctx, whereMap, updateMap)
+	return err
 }
