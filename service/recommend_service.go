@@ -170,6 +170,7 @@ func (s *RecommendService) buildTagBasedResponse(ctx *RecommendContext) {
 	ctx.Resp.Movies = s.buildMovies(ctx, func(sourceID string) *movie.RecommendReason {
 		return &movie.RecommendReason{
 			ReasonType: movie.RecommendReasonType_RECOMMEND_REASON_TYPE_TAG,
+			TagReasonId: sourceID,
 			TagReason:  ctx.tagID2Tag[sourceID],
 		}
 	})

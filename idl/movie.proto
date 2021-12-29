@@ -20,7 +20,8 @@ message Participant {
 message RecommendReason {
     Movie movie_reason = 1;
     string tag_reason = 2;
-    RecommendReasonType reason_type = 3;
+    string tag_reason_id = 3;
+    RecommendReasonType reason_type = 4;
 }
 message Movie {
     string id = 1;
