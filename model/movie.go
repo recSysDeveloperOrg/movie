@@ -36,7 +36,7 @@ type Movie struct {
 	ReleaseDate   string         `bson:"release_date"`
 	Language      string         `bson:"language"`
 	AverageRating float64        `bson:"average_rating"`
-	UniqueCount   int64          `bson:"unique_cnt"`
+	UniqueCount   int64          `bson:"unique_rating_cnt"`
 }
 
 var movieID2MovieCache = make(map[string]*Movie)
@@ -97,11 +97,7 @@ func (*MovieDao) UpdateMovies(ctx context.Context, movie *Movie) error {
 			{"unique_rating_cnt", movie.UniqueCount},
 		},
 	}}
-	// if _, err := GetClient().Collection(CollectionMovie).UpdateOne(ctx, whereMap, updateMap); err != nil {
-	// 	return err
-	// }
 
 	_, err = GetClient().Collection(CollectionMovie).UpdateOne(ctx, whereMap, updateMap)
-
 	return err
 }

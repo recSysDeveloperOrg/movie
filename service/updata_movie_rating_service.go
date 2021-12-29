@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	. "movie/constant"
 	"movie/idl/gen/movie"
 	"movie/model"
@@ -78,7 +79,7 @@ func (s *UpdateMovieRatingService) updateRatings(ctx *UpdateMovieRatingContext) 
 		return
 	}
 	if len(oldMovieDetailMap) == 0 {
-		ctx.ErrCode = BuildErrCode(err, RetReadRepoErr)
+		ctx.ErrCode = BuildErrCode(fmt.Sprintf("找不到Movie:%s", ctx.Req.MovieId), RetReadRepoErr)
 		return
 	}
 	oldMovieDetail := oldMovieDetailMap[ctx.Req.MovieId]
